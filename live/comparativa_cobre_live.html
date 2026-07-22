@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Comparativa — Ero Copper, Teck & Freeport + ETFs Mineros</title>
+<style>
+:root{
+  --bg:#0a0a0f; --bg2:#111119; --panel:#15151f; --panel2:#1b1b28; --border:#2a2a38;
+  --gold:#d4af37; --gold-bright:#f0c95c; --text:#e8e6e1; --text-dim:#9a978f;
+  --green:#3ecf8e; --red:#ef4a5f; --amber:#f0b429;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{ --bg:#f7f5ef; --bg2:#ffffff; --panel:#ffffff; --panel2:#f4f1e8; --border:#e2ddd0; --text:#1a1a1a; --text-dim:#6b6860; }
+}
+:root[data-theme="dark"]{ --bg:#0a0a0f; --bg2:#111119; --panel:#15151f; --panel2:#1b1b28; --border:#2a2a38; --text:#e8e6e1; --text-dim:#9a978f; }
+:root[data-theme="light"]{ --bg:#f7f5ef; --bg2:#ffffff; --panel:#ffffff; --panel2:#f4f1e8; --border:#e2ddd0; --text:#1a1a1a; --text-dim:#6b6860; }
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.45;}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 60px;}
+a{color:var(--gold-bright);}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;}
+.masthead{border-bottom:2px solid var(--gold);padding:22px 20px 16px;background:linear-gradient(180deg,var(--bg2),var(--bg));}
+.masthead-inner{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;}
+.masthead h1{margin:0;font-size:1.5rem;letter-spacing:.02em;color:var(--gold-bright);}
+.masthead .sub{color:var(--text-dim);font-size:.85rem;margin-top:4px;}
+.badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.72rem;padding:5px 10px;border-radius:4px;border:1px solid var(--border);background:var(--panel2);white-space:nowrap;}
+.badge.snapshot{color:var(--amber);border-color:var(--amber);}
+.badge.live{color:var(--green);border-color:var(--green);}
+.alert-banner{max-width:1180px;margin:14px auto 0;padding:12px 16px;border:1px solid var(--red);background:rgba(239,74,95,.12);color:var(--red);border-radius:6px;font-family:var(--mono);font-size:.85rem;font-weight:600;}
+.section{margin-top:28px;}
+.section h2{font-size:1.05rem;color:var(--gold-bright);border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:14px;letter-spacing:.02em;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;}
+.stat-tile{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px;}
+.stat-tile .label{font-size:.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;}
+.stat-tile .value{font-family:var(--mono);font-size:1.35rem;font-weight:600;margin-top:4px;}
+.stat-tile .delta{font-family:var(--mono);font-size:.8rem;margin-top:2px;}
+.stat-tile .asof{font-size:.65rem;color:var(--text-dim);margin-top:6px;}
+.up{color:var(--green);} .down{color:var(--red);} .flat{color:var(--text-dim);}
+table{width:100%;border-collapse:collapse;font-size:.82rem;}
+th{text-align:left;font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;color:var(--text-dim);border-bottom:1px solid var(--gold);padding:8px 10px;background:var(--panel2);white-space:nowrap;}
+td{padding:8px 10px;border-bottom:1px solid var(--border);font-family:var(--mono);white-space:nowrap;}
+tr:hover td{background:var(--panel2);}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;}
+.tag{display:inline-block;font-size:.65rem;padding:2px 6px;border-radius:3px;border:1px solid var(--border);color:var(--text-dim);font-family:var(--mono);}
+.tag.nodata{color:var(--amber);border-color:var(--amber);}
+.shark{background:linear-gradient(135deg,var(--panel2),var(--panel));border:1px solid var(--gold);border-radius:10px;padding:18px 20px;}
+.shark h2{border:none;margin-bottom:10px;}
+.shark p{margin:0 0 10px;font-size:.92rem;}
+.shark p:last-child{margin-bottom:0;}
+.shark .signature{color:var(--gold-bright);font-family:var(--mono);font-size:.75rem;margin-top:12px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:720px){.grid2{grid-template-columns:1fr;}}
+.riskbox{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px 16px;}
+.riskbox h3{margin:0 0 8px;font-size:.85rem;color:var(--gold-bright);}
+.riskbox ul{margin:0;padding-left:18px;font-size:.83rem;}
+.riskbox li{margin-bottom:6px;}
+footer{margin-top:36px;border-top:1px solid var(--border);padding-top:16px;font-size:.72rem;color:var(--text-dim);}
+footer h4{font-size:.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px;}
+footer ul{margin:0;padding-left:16px;}
+footer li{margin-bottom:4px;}
+.disclaimer{margin-top:14px;padding:10px 12px;background:var(--panel2);border-radius:6px;border:1px solid var(--border);font-weight:600;}
+.tv-widget-container{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:4px;}
+.conf-note{font-size:.65rem;color:var(--amber);margin-top:2px;}
+</style>
+</head>
+<body>
+<div class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <h1>⛏️ Comparativa — Ero Copper, Teck & Freeport + ETFs Mineros</h1>
+      <div class="sub">Matriz de valuación y fundamentales: ERO, TECK, FCX — cobre como hilo conductor</div>
+    </div>
+    <span class="badge live">🟢 LIVE · Widgets TradingView activos · Análisis snapshot al 22 jul 2026, ~16:00 UTC</span>
+  </div>
+</div>
+<div class="alert-banner">⚠ ALERTA — Cobre COMEX superó el umbral de $6.50/lb: $6.56/lb (+3.5% aprox.) al 22-jul-2026, máximo de 6 semanas.</div>
+<div style="max-width:1180px;margin:14px auto 0;"><div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+{"symbols": [{"proName": "COMEX:HG1!","title": "Cobre"},{"proName": "NYSE:FCX","title": "FCX"},{"proName": "TSX:ERO","title": "ERO"},{"proName": "NYSE:TECK","title": "TECK"}],"colorTheme": "dark","isTransparent": true,"showSymbolLogo": false,"locale": "es"}
+</script>
+</div></div>
+<div class="wrap">
+
+<div class="section">
+  <h2>Panel principal</h2>
+  <div class="stat-grid"><div class="stat-tile"><div class="label">Cobre COMEX</div><div class="tv-widget-container" style="height:60px;">
+<div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+{"symbol": "COMEX:HG1!","colorTheme": "dark","isTransparent": true,"locale": "es","width": "100%"}
+</script>
+</div>
+</div>
+<noscript><div class="stat-tile"><div class="label">Cobre COMEX</div><div class="value mono">$6.56/lb</div><div class="delta up">+3.5% aprox.</div></div></noscript><div class="asof">22-jul-2026 · TradingView en vivo (fallback: snapshot de esta corrida)</div></div><div class="stat-tile"><div class="label">FCX</div><div class="tv-widget-container" style="height:60px;">
+<div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+{"symbol": "NYSE:FCX","colorTheme": "dark","isTransparent": true,"locale": "es","width": "100%"}
+</script>
+</div>
+</div>
+<noscript><div class="stat-tile"><div class="label">FCX</div><div class="value mono">$68.68</div><div class="delta down">-0.55%</div></div></noscript><div class="asof">22-jul-2026 · TradingView en vivo (fallback: snapshot de esta corrida)</div></div><div class="stat-tile"><div class="label">ERO (NYSE)</div><div class="tv-widget-container" style="height:60px;">
+<div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+{"symbol": "TSX:ERO","colorTheme": "dark","isTransparent": true,"locale": "es","width": "100%"}
+</script>
+</div>
+</div>
+<noscript><div class="stat-tile"><div class="label">ERO (NYSE)</div><div class="value mono">$27.44</div><div class="delta flat">Sin dato confiable</div></div></noscript><div class="asof">21-jul-2026 · TradingView en vivo (fallback: snapshot de esta corrida)</div></div><div class="stat-tile"><div class="label">TECK</div><div class="tv-widget-container" style="height:60px;">
+<div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+{"symbol": "NYSE:TECK","colorTheme": "dark","isTransparent": true,"locale": "es","width": "100%"}
+</script>
+</div>
+</div>
+<noscript><div class="stat-tile"><div class="label">TECK</div><div class="value mono">$56.81</div><div class="delta up">+4.28%</div></div></noscript><div class="asof">21-jul-2026 · TradingView en vivo (fallback: snapshot de esta corrida)</div></div></div>
+</div>
+
+<div class="section">
+  <h2>Matriz de valuación y fundamentales</h2>
+  <div class="table-wrap"><table>
+  <tr><th>Métrica</th><th>ERO Copper (NYSE)</th><th>Teck Resources</th><th>Freeport-McMoRan</th></tr>
+  <tr><td>Precio</td><td>$27.44</td><td>$56.81</td><td>$68.68</td></tr>
+  <tr><td>Var. diaria</td><td><span class="tag nodata">Sin dato confiable</span></td><td class="up">+4.28%</td><td class="down">-0.55%</td></tr>
+  <tr><td>Market cap</td><td>~$2.9B</td><td>$27.84B</td><td>$84.51B</td></tr>
+  <tr><td>P/E ttm</td><td>~10.1x</td><td>20.38x</td><td><span class="tag nodata">Sin dato confiable</span> (rango 28-46x entre fuentes)</td></tr>
+  <tr><td>Rango 52 sem.</td><td>$12.79–$39.80</td><td>$30.98–$71.25</td><td>$35.15–$72.28</td></tr>
+  <tr><td>Ingresos ttm / var.%</td><td>$923.93M, +88.73% YoY</td><td>$8.995B (var. YoY sin confirmar de forma fiable)</td><td>~$25.91B, +1.8% (año completo, no ttm estricto)</td></tr>
+  <tr><td>EPS ttm / var.%</td><td>$3.97 (Q1 trimestral +35.1% YoY)</td><td>$2.71 ttm (USD)</td><td>$1.88 ttm</td></tr>
+  <tr><td>Dividendo</td><td>0.00% (no paga)</td><td>~0.54%-0.65% yield</td><td>~1.03% yield</td></tr>
+  <tr><td>Consenso analistas</td><td>Moderate Buy</td><td>Hold / Moderate Buy (mixto)</td><td>Buy</td></tr>
+  <tr><td>Precio objetivo (PT)</td><td>$36.04 (20 analistas)</td><td>$48-$60 (rango amplio entre fuentes)</td><td>$70.04-$70.76</td></tr>
+  <tr><td>Rating técnico</td><td>TradingView: Strong Buy (1m)</td><td>TradingView: Strong Buy · Barchart: 100% Buy</td><td>TradingView: Buy · Barchart: 8% Sell (divergencia)</td></tr>
+  </table></div>
+  <p class="conf-note">Nota: ERO Copper cotiza también en TSX/NEO en CAD (rango 52 sem. equivalente CA$17.66–$51.00) — cifras arriba en USD/NYSE para consistencia. Teck reporta resultados Q2 2026 el 23-jul-2026 (mañana); estas cifras podrían quedar desactualizadas de inmediato.</p>
+</div>
+
+<div class="section">
+  <h2>ETFs mineros de cobre / metales</h2>
+  <div class="table-wrap"><table>
+  <tr><th>Ticker</th><th>Nombre</th><th>Precio</th><th>Var. diaria</th><th>As of</th></tr>
+  <tr><td>COPX</td><td>Global X Copper Miners</td><td>$73.86</td><td class="down">-1.78%</td><td>21-jul-2026</td></tr>
+  <tr><td>XME</td><td>SPDR S&amp;P Metals &amp; Mining</td><td>$103.20</td><td><span class="tag nodata">Sin dato confiable</span></td><td>15-jul-2026</td></tr>
+  <tr><td>PICK</td><td>iShares Global Metals &amp; Mining</td><td>$65.53</td><td>~-0.4% (implícito)</td><td>22-jul-2026</td></tr>
+  <tr><td>GDX</td><td>VanEck Gold Miners</td><td>$74.17</td><td><span class="tag nodata">Sin dato confiable</span> (fechas en conflicto)</td><td>~21-jul-2026</td></tr>
+  <tr><td>GDXJ</td><td>VanEck Jr. Gold Miners</td><td><span class="tag nodata">Sin dato confiable</span></td><td>—</td><td>—</td></tr>
+  <tr><td>SIL</td><td>Global X Silver Miners</td><td><span class="tag nodata">Sin dato confiable</span></td><td>—</td><td>—</td></tr>
+  </table></div>
+</div>
+
+<div class="section shark">
+  <h2>🦈 La lectura del tiburón</h2>
+  <p>Cobre a $6.56/lb rompiendo máximos de seis semanas y el mercado técnico todavía no le cree del todo: Barchart tiene a FCX en "8% Sell" mientras TradingView dice "Buy". Esa divergencia es la oportunidad — o el precio se ajusta al fundamental de oferta apretada, o el fundamental es un espejismo de una tormenta puntual en Chile. Yo no adivino, pero sí observo: TECK con Barchart 100% Buy y Strong Buy en TradingView es la convicción más limpia del trío, y reporta mañana. Eso es asimetría con catalizador, no solo momentum.</p>
+  <p>ERO Copper creció ingresos +88.73% interanual sin pagar un centavo de dividendo — toda la caja se reinvierte. Eso es apuesta de crecimiento puro, con PT de consenso ($36.04) implicando +31% desde $27.44. Pero Goldman ya bajó de Buy a Neutral en abril. Cuando el sell-side institucional se pone cauto en una minera junior de alto crecimiento, escuchá — no es señal de venta automática, es señal de que el margen de error se achicó.</p>
+  <p>FCX con P/E disperso entre 28x y 46x según la fuente me dice que el mercado no se ha puesto de acuerdo sobre qué ganancias "normalizadas" usar — típico de un ciclo de commodities donde el consenso todavía está corriendo detrás del precio spot. Ahí está el trade: si el cobre sostiene $6.50+, las estimaciones de EPS de FCX van a revisarse al alza, y ese re-rating todavía no está en el precio.</p>
+  <div class="signature">— Análisis de régimen, no consejo de posición. Verificá el tape antes de apretar el gatillo.</div>
+</div>
+
+<div class="section grid2">
+  <div class="riskbox">
+    <h3>Riesgos</h3>
+    <ul>
+      <li>Teck reporta Q2 2026 el 23-jul — todas las cifras de ingresos/EPS aquí pueden quedar obsoletas en 24h.</li>
+      <li>P/E de FCX sin cifra confiable única (rango 28x-46x) — dificulta valuación relativa precisa.</li>
+      <li>Divergencia Barchart/TradingView en rating técnico de FCX — señal de incertidumbre del mercado, no de dirección clara.</li>
+    </ul>
+  </div>
+  <div class="riskbox">
+    <h3>Oportunidades</h3>
+    <ul>
+      <li>Cobre rompiendo $6.50-6.56/lb con catalizadores de oferta (Chile, inventarios Shanghai) — potencial re-rating de EPS en las tres mineras.</li>
+      <li>ERO Copper: crecimiento de ingresos +88.73% YoY con PT de consenso implicando +31% de upside.</li>
+      <li>TECK con consenso técnico más fuerte del grupo (Strong Buy / 100% Buy) de cara a resultados del 23-jul.</li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <h4>Fuentes citadas en esta corrida</h4>
+  <ul>
+<li>The National News — Copper prices volatility, July 22 2026</li>
+<li>WallStreetZen, companiesmarketcap.com, stockanalysis.com (vía búsqueda agregada) — ERO Copper fundamentales</li>
+<li>TipRanks, ChartMill, Daily Political, TickerReport — ERO consenso analistas y PT</li>
+<li>themarketsdaily.com, CNN, stockanalysis.com — Teck Resources precio y fundamentales</li>
+<li>Daily Political, MarketScreener — Teck consenso analistas</li>
+<li>Morningstar, ycharts, stockanalysis.com/stocks/fcx/ratings — Freeport-McMoRan fundamentales y consenso</li>
+<li>TradingView (technicals) y Barchart (opinion) — ratings técnicos de las 3 empresas</li>
+</ul>
+  <h4>Limitaciones y modo de operación</h4>
+  <p>Modo de operación: Versión A (este documento si es Artifact) = snapshot puro sin intento de datos en vivo. Versión B (archivos en <code>live/</code> del repo) = widgets TradingView en vivo + este mismo análisis snapshot.</p>
+<p>Múltiples fuentes financieras bloquearon el acceso directo (HTTP 403) durante esta corrida; los datos provienen de agregación de búsqueda web citando esas fuentes. P/E de FCX, variaciones % de varios ETFs (XME, GDXJ, SIL) y el precio objetivo de consenso de Teck presentaron discrepancias entre fuentes — se muestran como rango o "Sin dato confiable" en vez de forzar una cifra única.</p>
+  
+<h4>Nota sobre widgets en vivo</h4>
+<p>Los widgets de TradingView muestran precios en tiempo real cuando este archivo se abre en un navegador con conexión a internet (localmente o alojado fuera de claude.ai). El análisis, ratios y comentario del tiburón reflejan datos de esta corrida y NO se actualizan con los widgets.</p>
+  <div class="disclaimer">Esto no constituye asesoría financiera personalizada. Toda decisión de inversión implica riesgo, incluida la posible pérdida del capital.</div>
+</footer>
+</div>
+</body>
+</html>

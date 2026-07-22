@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Comparativa Amoniaco — Yara, CF, Nutrien & OCI + Gas Natural y Urea</title>
+<style>
+:root{
+  --bg:#0a0a0f; --bg2:#111119; --panel:#15151f; --panel2:#1b1b28; --border:#2a2a38;
+  --gold:#d4af37; --gold-bright:#f0c95c; --text:#e8e6e1; --text-dim:#9a978f;
+  --green:#3ecf8e; --red:#ef4a5f; --amber:#f0b429;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{ --bg:#f7f5ef; --bg2:#ffffff; --panel:#ffffff; --panel2:#f4f1e8; --border:#e2ddd0; --text:#1a1a1a; --text-dim:#6b6860; }
+}
+:root[data-theme="dark"]{ --bg:#0a0a0f; --bg2:#111119; --panel:#15151f; --panel2:#1b1b28; --border:#2a2a38; --text:#e8e6e1; --text-dim:#9a978f; }
+:root[data-theme="light"]{ --bg:#f7f5ef; --bg2:#ffffff; --panel:#ffffff; --panel2:#f4f1e8; --border:#e2ddd0; --text:#1a1a1a; --text-dim:#6b6860; }
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.45;}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 60px;}
+a{color:var(--gold-bright);}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;}
+.masthead{border-bottom:2px solid var(--gold);padding:22px 20px 16px;background:linear-gradient(180deg,var(--bg2),var(--bg));}
+.masthead-inner{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;}
+.masthead h1{margin:0;font-size:1.5rem;letter-spacing:.02em;color:var(--gold-bright);}
+.masthead .sub{color:var(--text-dim);font-size:.85rem;margin-top:4px;}
+.badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.72rem;padding:5px 10px;border-radius:4px;border:1px solid var(--border);background:var(--panel2);white-space:nowrap;}
+.badge.snapshot{color:var(--amber);border-color:var(--amber);}
+.badge.live{color:var(--green);border-color:var(--green);}
+.alert-banner{max-width:1180px;margin:14px auto 0;padding:12px 16px;border:1px solid var(--red);background:rgba(239,74,95,.12);color:var(--red);border-radius:6px;font-family:var(--mono);font-size:.85rem;font-weight:600;}
+.section{margin-top:28px;}
+.section h2{font-size:1.05rem;color:var(--gold-bright);border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:14px;letter-spacing:.02em;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;}
+.stat-tile{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px;}
+.stat-tile .label{font-size:.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;}
+.stat-tile .value{font-family:var(--mono);font-size:1.35rem;font-weight:600;margin-top:4px;}
+.stat-tile .delta{font-family:var(--mono);font-size:.8rem;margin-top:2px;}
+.stat-tile .asof{font-size:.65rem;color:var(--text-dim);margin-top:6px;}
+.up{color:var(--green);} .down{color:var(--red);} .flat{color:var(--text-dim);}
+table{width:100%;border-collapse:collapse;font-size:.82rem;}
+th{text-align:left;font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;color:var(--text-dim);border-bottom:1px solid var(--gold);padding:8px 10px;background:var(--panel2);white-space:nowrap;}
+td{padding:8px 10px;border-bottom:1px solid var(--border);font-family:var(--mono);white-space:nowrap;}
+tr:hover td{background:var(--panel2);}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;}
+.tag{display:inline-block;font-size:.65rem;padding:2px 6px;border-radius:3px;border:1px solid var(--border);color:var(--text-dim);font-family:var(--mono);}
+.tag.nodata{color:var(--amber);border-color:var(--amber);}
+.shark{background:linear-gradient(135deg,var(--panel2),var(--panel));border:1px solid var(--gold);border-radius:10px;padding:18px 20px;}
+.shark h2{border:none;margin-bottom:10px;}
+.shark p{margin:0 0 10px;font-size:.92rem;}
+.shark p:last-child{margin-bottom:0;}
+.shark .signature{color:var(--gold-bright);font-family:var(--mono);font-size:.75rem;margin-top:12px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:720px){.grid2{grid-template-columns:1fr;}}
+.riskbox{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px 16px;}
+.riskbox h3{margin:0 0 8px;font-size:.85rem;color:var(--gold-bright);}
+.riskbox ul{margin:0;padding-left:18px;font-size:.83rem;}
+.riskbox li{margin-bottom:6px;}
+footer{margin-top:36px;border-top:1px solid var(--border);padding-top:16px;font-size:.72rem;color:var(--text-dim);}
+footer h4{font-size:.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px;}
+footer ul{margin:0;padding-left:16px;}
+footer li{margin-bottom:4px;}
+.disclaimer{margin-top:14px;padding:10px 12px;background:var(--panel2);border-radius:6px;border:1px solid var(--border);font-weight:600;}
+.tv-widget-container{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:4px;}
+.conf-note{font-size:.65rem;color:var(--amber);margin-top:2px;}
+</style>
+</head>
+<body>
+<div class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <h1>🧪 Comparativa Amoniaco — Yara, CF, Nutrien & OCI + Gas Natural y Urea</h1>
+      <div class="sub">Nitrogenados: fundamentales de productores, gas natural regional y benchmarks de amoniaco/urea</div>
+    </div>
+    <span class="badge live">🟢 LIVE · Widgets TradingView activos · Análisis snapshot al 22 jul 2026, ~16:00 UTC</span>
+  </div>
+</div>
+
+<div style="max-width:1180px;margin:14px auto 0;"><div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+{"symbols": [{"proName": "NYMEX:NG1!","title": "Gas Natural"},{"proName": "OSE:YAR","title": "Yara"},{"proName": "NYSE:CF","title": "CF Industries"},{"proName": "NYSE:NTR","title": "Nutrien"}],"colorTheme": "dark","isTransparent": true,"showSymbolLogo": false,"locale": "es"}
+</script>
+</div></div>
+<div class="wrap">
+
+<div class="section">
+  <h2>Panel principal</h2>
+  <div class="stat-grid"><div class="stat-tile"><div class="label">Henry Hub Gas Natural</div><div class="tv-widget-container" style="height:60px;">
+<div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+{"symbol": "NYMEX:NG1!","colorTheme": "dark","isTransparent": true,"locale": "es","width": "100%"}
+</script>
+</div>
+</div>
+<noscript><div class="stat-tile"><div class="label">Henry Hub Gas Natural</div><div class="value mono">$2.86/MMBtu</div><div class="delta flat"></div></div></noscript><div class="asof">21-jul-2026 · TradingView en vivo (fallback: snapshot de esta corrida)</div></div><div class="stat-tile"><div class="label">Yara (OSE)</div><div class="tv-widget-container" style="height:60px;">
+<div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+{"symbol": "OSE:YAR","colorTheme": "dark","isTransparent": true,"locale": "es","width": "100%"}
+</script>
+</div>
+</div>
+<noscript><div class="stat-tile"><div class="label">Yara (OSE)</div><div class="value mono">448.10 NOK</div><div class="delta down">-0.71%</div></div></noscript><div class="asof">22-jul-2026 · TradingView en vivo (fallback: snapshot de esta corrida)</div></div><div class="stat-tile"><div class="label">CF Industries</div><div class="tv-widget-container" style="height:60px;">
+<div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+{"symbol": "NYSE:CF","colorTheme": "dark","isTransparent": true,"locale": "es","width": "100%"}
+</script>
+</div>
+</div>
+<noscript><div class="stat-tile"><div class="label">CF Industries</div><div class="value mono">$113.20</div><div class="delta flat">Sin dato de hoy</div></div></noscript><div class="asof">7-jul-2026 · TradingView en vivo (fallback: snapshot de esta corrida)</div></div><div class="stat-tile"><div class="label">Nutrien</div><div class="tv-widget-container" style="height:60px;">
+<div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+{"symbol": "NYSE:NTR","colorTheme": "dark","isTransparent": true,"locale": "es","width": "100%"}
+</script>
+</div>
+</div>
+<noscript><div class="stat-tile"><div class="label">Nutrien</div><div class="value mono">$66.84</div><div class="delta flat">Sin dato confiable</div></div></noscript><div class="asof">22-jul-2026 · TradingView en vivo (fallback: snapshot de esta corrida)</div></div>
+    <div class="stat-tile"><div class="label">TTF Europa</div><div class="value mono">58.585 EUR/MWh</div><div class="asof">21-jul-2026</div></div>
+    <div class="stat-tile"><div class="label">JKM Asia</div><div class="value mono">$21.03/MMBtu</div><div class="delta up">+32.6% mensual</div><div class="asof">20-jul-2026</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Matriz de valuación y fundamentales</h2>
+  <div class="table-wrap"><table>
+  <tr><th>Métrica</th><th>Yara (YAR.OL)</th><th>CF Industries</th><th>Nutrien</th><th>OCI Global</th><th>ICL Group</th><th>Ma'aden (1211.SR)</th></tr>
+  <tr><td>Precio</td><td>448.10 NOK<span class="conf-note"><br/>⚠ otra fuente: 504.6 NOK</span></td><td>$113.20 (7-jul)</td><td>$66.84</td><td>€4.076</td><td>$5.05</td><td>63.10 SAR (6-jun)</td></tr>
+  <tr><td>Var. diaria</td><td class="down">-0.71%</td><td><span class="tag nodata">Sin dato confiable</span></td><td><span class="tag nodata">Sin dato confiable</span></td><td><span class="tag nodata">Sin dato confiable</span></td><td><span class="tag nodata">Sin dato confiable</span></td><td><span class="tag nodata">Sin dato confiable</span></td></tr>
+  <tr><td>Market cap</td><td>~114.14B NOK</td><td>$17.4-18.1B</td><td>$32.03B</td><td>~€859.49M</td><td>$6.52B</td><td>~244.94B SAR</td></tr>
+  <tr><td>P/E ttm</td><td>~7.49x</td><td>~11.4x</td><td>13.27x-15.25x</td><td>~5.31x</td><td>24.5x<span class="conf-note"><br/>⚠ inconsistente con EPS (~13x implícito)</span></td><td>~42.58x</td></tr>
+  <tr><td>Rango 52 sem.</td><td>353.40-599.40 NOK</td><td>$75.42-$141.96</td><td>$53.03-$85.36</td><td>€2.55-€8.03</td><td>$4.76-$7.08</td><td><span class="tag nodata">Sin dato confiable</span></td></tr>
+  <tr><td>Ingresos ttm / var.%</td><td>~$16.5B</td><td>$7.407B</td><td>Est. FY26 ~$26.79-27.0B (proyección)</td><td><span class="tag nodata">Sin dato confiable</span></td><td>Q1 2026: $2.02B, +14% YoY (no ttm completo)</td><td><span class="tag nodata">Sin dato confiable</span> (rango disperso 9.6B-47.1B SAR)</td></tr>
+  <tr><td>EPS ttm / var.%</td><td>$6.01<span class="conf-note"><br/>⚠ posible inconsistencia de divisa</span></td><td>$11.13 (consenso FY26 $15.86, +69.3%)</td><td>Est. FY26 $4.70-$5.06</td><td>Consenso próx. FY $0.80</td><td>$0.39 (no-GAAP), consenso FY26 $0.42 (+110%)</td><td><span class="tag nodata">Sin dato confiable</span></td></tr>
+  <tr><td>Dividendo</td><td>22.00 NOK fwd, ~4.87% yield</td><td>$2.40 anualizado, 1.62%-2.56% yield</td><td>~3.27% yield</td><td><span class="tag nodata">Sin dato confiable</span> (cifra reportada de 69.54% es artefacto de retornos extraordinarios de capital 2025-26, no yield sostenible)</td><td>~$0.18/año, 3.52%-4.26% yield (NYSE)</td><td><span class="tag nodata">Sin dato confiable</span></td></tr>
+  <tr><td>Consenso analistas</td><td>PT 538.84 NOK</td><td>Hold, PT $120.37-$125.16</td><td>Buy, PT disperso ($64.89-$81.77 según conversión)</td><td>Neutral/Hold, PT €4.01</td><td>Hold, PT $6.45</td><td>Neutral, PT 66.62 SAR</td></tr>
+  <tr><td>Rating técnico</td><td>Mixto (Sell hoy / Buy 1sem-1mes)</td><td>Buy / Strong Buy (Barchart 56% Buy)</td><td>Mixto (NYSE Buy / TSX Sell)</td><td>Sell / Strong Sell</td><td><span class="tag nodata">Sin dato confiable</span></td><td><span class="tag nodata">Sin dato confiable</span></td></tr>
+  </table></div>
+</div>
+
+<div class="section">
+  <h2>Gas natural por región</h2>
+  <div class="table-wrap"><table>
+  <tr><th>Benchmark</th><th>Precio</th><th>As of</th></tr>
+  <tr><td>Henry Hub (spot)</td><td>$2.86/MMBtu</td><td>21-jul-2026</td></tr>
+  <tr><td>Henry Hub (EIA STEO, pronóstico Q3 2026)</td><td>$3.37/MMBtu (promedio)</td><td>STEO jul-2026</td></tr>
+  <tr><td>TTF Europa (ICE Dutch TTF)</td><td>58.585 EUR/MWh</td><td>21-jul-2026</td></tr>
+  <tr><td>JKM Asia</td><td>$21.03/MMBtu (+32.6% mensual, +75.5% interanual)</td><td>20-jul-2026</td></tr>
+  </table></div>
+  <p class="conf-note">Contexto: TTF y JKM elevados por el conflicto EEUU-Israel-Irán y disrupción en el Estrecho de Ormuz, afectando ~1/3 del comercio mundial de fertilizantes según reportes de mercado.</p>
+</div>
+
+<div class="section">
+  <h2>Benchmarks de amoniaco (Fertecon/Argus/SGX)</h2>
+  <div class="table-wrap"><table>
+  <tr><th>Benchmark</th><th>Estado</th></tr>
+  <tr><td>CFR Tampa</td><td><span class="tag nodata">Sin dato confiable — fuente de suscripción no accesible</span></td></tr>
+  <tr><td>FOB Caribe</td><td><span class="tag nodata">Sin dato confiable — fuente de suscripción no accesible</span></td></tr>
+  <tr><td>FOB Middle East</td><td><span class="tag nodata">Sin dato confiable — fuente de suscripción no accesible</span></td></tr>
+  <tr><td>CFR Med</td><td><span class="tag nodata">Sin dato confiable — fuente de suscripción no accesible</span></td></tr>
+  <tr><td>CFR NW Europe (duty paid/unpaid)</td><td><span class="tag nodata">Sin dato confiable — fuente de suscripción no accesible</span></td></tr>
+  <tr><td>FOB Black Sea</td><td><span class="tag nodata">Sin dato confiable — fuente de suscripción no accesible</span></td></tr>
+  <tr><td>CFR Far East</td><td><span class="tag nodata">Sin dato confiable — fuente de suscripción no accesible</span></td></tr>
+  <tr><td>FOB Southeast Asia</td><td><span class="tag nodata">Sin dato confiable — fuente de suscripción no accesible</span></td></tr>
+  </table></div>
+  <p class="conf-note">Dato complementario NO comparable a benchmark de mercado: precio de venta promedio interno del segmento amoniaco de CF Industries, $568/tonelada de producto ($693/t de nutriente) en Q1 2026, +25% interanual (fuente: 10-Q SEC de CF Industries, dato de la propia compañía, no un assessment de mercado independiente).</p>
+</div>
+
+<div class="section">
+  <h2>Urea / nitratos</h2>
+  <div class="table-wrap"><table>
+  <tr><th>Mercado</th><th>Precio</th><th>As of</th></tr>
+  <tr><td>Índice genérico de urea (región/grado no confirmado)</td><td>$421.50/t (mes +13.92%, interanual -5.28%)</td><td>20-jul-2026</td></tr>
+  <tr><td>NOLA barge</td><td><span class="tag nodata">Sin dato confiable</span></td><td>—</td></tr>
+  <tr><td>Black Sea</td><td><span class="tag nodata">Sin dato confiable</span></td><td>—</td></tr>
+  <tr><td>Egipto</td><td><span class="tag nodata">Sin dato confiable</span></td><td>—</td></tr>
+  <tr><td>CME Urea Granular futuros</td><td><span class="tag nodata">Sin dato confiable</span></td><td>—</td></tr>
+  </table></div>
+</div>
+
+<div class="section">
+  <h2>Ratio amoniaco/gas natural y spread urea-amoniaco</h2>
+  <div class="stat-grid">
+    <div class="stat-tile"><div class="label">Ratio Amoniaco/Gas Natural</div><div class="value mono">Sin dato confiable</div><div class="delta flat">depende de benchmark de amoniaco no accesible</div><div class="asof">22-jul-2026</div></div>
+    <div class="stat-tile"><div class="label">Spread Urea vs. Amoniaco</div><div class="value mono">Sin dato confiable</div><div class="delta flat">benchmark de amoniaco no disponible</div><div class="asof">22-jul-2026</div></div>
+  </div>
+  <p class="conf-note">Factor de referencia estándar (no aplicado por falta de benchmark confiable): ~33.6 MMBtu de gas natural por tonelada de amoniaco vía proceso Haber-Bosch convencional.</p>
+</div>
+
+<div class="section shark">
+  <h2>🦈 La lectura del tiburón</h2>
+  <p>Henry Hub en $2.86/MMBtu es gas barato en EEUU mientras TTF y JKM se disparan por el cierre de facto de Ormuz — eso es el mayor spread geográfico de costo de insumo que vas a ver en fertilizantes nitrogenados este año. CF Industries produce con gas de EEUU y vende amoniaco con referencia a precios internacionales inflados por el conflicto: ese es el margen que el consenso todavía no terminó de repricear en el EPS FY26 (+69.3% estimado).</p>
+  <p>Yara acaba de comprar la planta Gulf Coast Ammonia en Texas por $1.3B — están comprando exposición directa a gas Henry Hub barato justo cuando Europa paga TTF a 58+ EUR/MWh. Esa jugada de arbitraje geográfico de insumo es exactamente el tipo de asimetría estructural que buscás en un productor de commodities: no apostás al precio, apostás a la ventaja de costo relativo.</p>
+  <p>Los benchmarks de amoniaco físico (Tampa, NW Europe, Black Sea) están detrás de paywall hoy — no tengo el dato duro, y no lo voy a inventar. Pero el contexto cualitativo (FOB Middle East +25% en dos semanas según prensa especializada) apunta en la misma dirección que el gas: presión alcista real. Si operás en este espacio sin acceso a Fertecon/Argus, estás compitiendo a ciegas contra quien sí lo tiene — considéralo el costo de entrada real a este mercado.</p>
+  <div class="signature">— Análisis de régimen, no consejo de posición. Verificá el tape antes de apretar el gatillo.</div>
+</div>
+
+<div class="section grid2">
+  <div class="riskbox">
+    <h3>Riesgos</h3>
+    <ul>
+      <li>Sin acceso a benchmarks físicos de amoniaco (Fertecon/Argus/SGX) — imposible verificar si el rally de gas se trasladó a precio de producto.</li>
+      <li>Discrepancia de precio de Yara entre fuentes (448.10 vs 504.6 NOK) — verificar antes de operar.</li>
+      <li>Anomalía en dato de dividendo de OCI (69.54% reportado) — no es un yield sostenible real, riesgo de mala interpretación.</li>
+    </ul>
+  </div>
+  <div class="riskbox">
+    <h3>Oportunidades</h3>
+    <ul>
+      <li>Spread de costo de gas EEUU (Henry Hub $2.86) vs. Europa/Asia (TTF/JKM disparados) favorece a productores con base de costo en EEUU (CF Industries).</li>
+      <li>Adquisición de Yara de Gulf Coast Ammonia — exposición directa a gas barato de EEUU.</li>
+      <li>CF Industries con consenso de EPS FY26 +69.3% interanual, apoyado en márgenes de amoniaco reportados +25% YoY internamente.</li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <h4>Fuentes citadas en esta corrida</h4>
+  <ul>
+<li>investing.com, wallstreetzen.com — CF Industries fundamentales; SEC 10-Q CF Industries (cf-20260331.htm)</li>
+<li>stockanalysis.com/forecast, wallstreetzen.com, gurufocus.com — Nutrien fundamentales y PT</li>
+<li>chartmill.com, marketscreener.com, yara.com (Q2 2026 release) — Yara fundamentales, consenso y adquisición Gulf Coast Ammonia</li>
+<li>investing.com, digrin.com, eurex.com, marketscreener.com — OCI Global fundamentales</li>
+<li>chartmill.com, marketscreener.com, seekingalpha.com — ICL Group fundamentales</li>
+<li>companiesmarketcap.com, mlq.ai, investing.com — Ma'aden (1211.SR) fundamentales</li>
+<li>tradingeconomics.com — Henry Hub spot; eia.gov/outlooks/steo — pronóstico Henry Hub</li>
+<li>barchart.com, investing.com — TTF Europa; globallnghub.com, tankermap.com — JKM Asia</li>
+<li>tradingeconomics.com (agregado) — índice de urea genérico</li>
+<li>tradingview.com/technicals, barchart.com/opinion, chartmill.com — ratings técnicos</li>
+</ul>
+  <h4>Limitaciones y modo de operación</h4>
+  <p>Modo de operación: Versión A (este documento si es Artifact) = snapshot puro sin intento de datos en vivo. Versión B (archivos en <code>live/</code> del repo) = widgets TradingView en vivo + este mismo análisis snapshot.</p>
+<p><strong>Fuentes de suscripción no accesibles:</strong> todos los benchmarks físicos de amoniaco (CFR Tampa, FOB Caribe, FOB Middle East, CFR Med, CFR NW Europe, FOB Black Sea, CFR Far East, FOB Southeast Asia) y los benchmarks específicos de urea (NOLA, Black Sea, Egipto, futuros CME) requieren suscripción a Fertecon (S&amp;P Global Commodity Insights), Argus Media, Profercy o QCIntel — no accesibles públicamente en esta corrida. Se declaran explícitamente como "Sin dato confiable" en vez de estimarse. El ratio amoniaco/gas natural y el spread urea-amoniaco dependen de estos benchmarks y por tanto tampoco pudieron calcularse.</p>
+<p>Discrepancias sin resolver entre fuentes: precio de Yara (448.10 vs 504.6 NOK), P/E de ICL (24.5x vs ~13x implícito por EPS), ingresos de Ma'aden (rango 9.6B-47.1B SAR), yield de dividendo de OCI (69.54% probablemente distorsionado por retornos de capital extraordinarios 2025-26). Ticker de Ma'aden corregido a 1211.SR (2010.SR corresponde a SABIC, otra empresa).</p>
+  
+<h4>Nota sobre widgets en vivo</h4>
+<p>Los widgets de TradingView muestran precios en tiempo real cuando este archivo se abre en un navegador con conexión a internet (localmente o alojado fuera de claude.ai). El análisis, ratios y comentario del tiburón reflejan datos de esta corrida y NO se actualizan con los widgets.</p>
+  <div class="disclaimer">Esto no constituye asesoría financiera personalizada. Toda decisión de inversión implica riesgo, incluida la posible pérdida del capital.</div>
+</footer>
+</div>
+</body>
+</html>

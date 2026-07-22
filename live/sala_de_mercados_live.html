@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sala de Mercados — Metales, Minería & Tasas</title>
+<style>
+:root{
+  --bg:#0a0a0f; --bg2:#111119; --panel:#15151f; --panel2:#1b1b28; --border:#2a2a38;
+  --gold:#d4af37; --gold-bright:#f0c95c; --text:#e8e6e1; --text-dim:#9a978f;
+  --green:#3ecf8e; --red:#ef4a5f; --amber:#f0b429;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{ --bg:#f7f5ef; --bg2:#ffffff; --panel:#ffffff; --panel2:#f4f1e8; --border:#e2ddd0; --text:#1a1a1a; --text-dim:#6b6860; }
+}
+:root[data-theme="dark"]{ --bg:#0a0a0f; --bg2:#111119; --panel:#15151f; --panel2:#1b1b28; --border:#2a2a38; --text:#e8e6e1; --text-dim:#9a978f; }
+:root[data-theme="light"]{ --bg:#f7f5ef; --bg2:#ffffff; --panel:#ffffff; --panel2:#f4f1e8; --border:#e2ddd0; --text:#1a1a1a; --text-dim:#6b6860; }
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.45;}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 60px;}
+a{color:var(--gold-bright);}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;}
+.masthead{border-bottom:2px solid var(--gold);padding:22px 20px 16px;background:linear-gradient(180deg,var(--bg2),var(--bg));}
+.masthead-inner{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;}
+.masthead h1{margin:0;font-size:1.5rem;letter-spacing:.02em;color:var(--gold-bright);}
+.masthead .sub{color:var(--text-dim);font-size:.85rem;margin-top:4px;}
+.badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.72rem;padding:5px 10px;border-radius:4px;border:1px solid var(--border);background:var(--panel2);white-space:nowrap;}
+.badge.snapshot{color:var(--amber);border-color:var(--amber);}
+.badge.live{color:var(--green);border-color:var(--green);}
+.alert-banner{max-width:1180px;margin:14px auto 0;padding:12px 16px;border:1px solid var(--red);background:rgba(239,74,95,.12);color:var(--red);border-radius:6px;font-family:var(--mono);font-size:.85rem;font-weight:600;}
+.section{margin-top:28px;}
+.section h2{font-size:1.05rem;color:var(--gold-bright);border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:14px;letter-spacing:.02em;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;}
+.stat-tile{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px;}
+.stat-tile .label{font-size:.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;}
+.stat-tile .value{font-family:var(--mono);font-size:1.35rem;font-weight:600;margin-top:4px;}
+.stat-tile .delta{font-family:var(--mono);font-size:.8rem;margin-top:2px;}
+.stat-tile .asof{font-size:.65rem;color:var(--text-dim);margin-top:6px;}
+.up{color:var(--green);} .down{color:var(--red);} .flat{color:var(--text-dim);}
+table{width:100%;border-collapse:collapse;font-size:.82rem;}
+th{text-align:left;font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;color:var(--text-dim);border-bottom:1px solid var(--gold);padding:8px 10px;background:var(--panel2);white-space:nowrap;}
+td{padding:8px 10px;border-bottom:1px solid var(--border);font-family:var(--mono);white-space:nowrap;}
+tr:hover td{background:var(--panel2);}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;}
+.tag{display:inline-block;font-size:.65rem;padding:2px 6px;border-radius:3px;border:1px solid var(--border);color:var(--text-dim);font-family:var(--mono);}
+.tag.nodata{color:var(--amber);border-color:var(--amber);}
+.shark{background:linear-gradient(135deg,var(--panel2),var(--panel));border:1px solid var(--gold);border-radius:10px;padding:18px 20px;}
+.shark h2{border:none;margin-bottom:10px;}
+.shark p{margin:0 0 10px;font-size:.92rem;}
+.shark p:last-child{margin-bottom:0;}
+.shark .signature{color:var(--gold-bright);font-family:var(--mono);font-size:.75rem;margin-top:12px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:720px){.grid2{grid-template-columns:1fr;}}
+.riskbox{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px 16px;}
+.riskbox h3{margin:0 0 8px;font-size:.85rem;color:var(--gold-bright);}
+.riskbox ul{margin:0;padding-left:18px;font-size:.83rem;}
+.riskbox li{margin-bottom:6px;}
+footer{margin-top:36px;border-top:1px solid var(--border);padding-top:16px;font-size:.72rem;color:var(--text-dim);}
+footer h4{font-size:.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px;}
+footer ul{margin:0;padding-left:16px;}
+footer li{margin-bottom:4px;}
+.disclaimer{margin-top:14px;padding:10px 12px;background:var(--panel2);border-radius:6px;border:1px solid var(--border);font-weight:600;}
+.tv-widget-container{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:4px;}
+.conf-note{font-size:.65rem;color:var(--amber);margin-top:2px;}
+</style>
+</head>
+<body>
+<div class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <h1>🥇 Sala de Mercados — Metales, Minería & Tasas</h1>
+      <div class="sub">Oro, plata, cobre, renta fija UST, Fed, Nasdaq y mineras — panel institucional multi-activo</div>
+    </div>
+    <span class="badge live">🟢 LIVE · Widgets TradingView activos · Análisis snapshot al 22 jul 2026, ~16:00 UTC</span>
+  </div>
+</div>
+<div class="alert-banner">⚠ ALERTA — Cobre COMEX superó el umbral de $6.50/lb: $6.56/lb (+3.5% aprox.) al 22-jul-2026, máximo de 6 semanas.</div>
+<div style="max-width:1180px;margin:14px auto 0;"><div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+{"symbols": [{"proName": "OANDA:XAUUSD","title": "Oro"},{"proName": "OANDA:XAGUSD","title": "Plata"},{"proName": "COMEX:HG1!","title": "Cobre"},{"proName": "NASDAQ:IXIC","title": "Nasdaq"},{"proName": "BINANCE:BTCUSD","title": "BTC"}],"colorTheme": "dark","isTransparent": true,"showSymbolLogo": false,"locale": "es"}
+</script>
+</div></div>
+<div class="wrap">
+
+<div class="section">
+  <h2>Panel principal</h2>
+  <div class="stat-grid"><div class="stat-tile"><div class="label">Oro XAU/USD</div><div class="tv-widget-container" style="height:60px;">
+<div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+{"symbol": "OANDA:XAUUSD","colorTheme": "dark","isTransparent": true,"locale": "es","width": "100%"}
+</script>
+</div>
+</div>
+<noscript><div class="stat-tile"><div class="label">Oro XAU/USD</div><div class="value mono">$4,101.00</div><div class="delta up">+0.50%</div></div></noscript><div class="asof">22-jul-2026 · TradingView en vivo (fallback: snapshot de esta corrida)</div></div><div class="stat-tile"><div class="label">Plata XAG/USD</div><div class="tv-widget-container" style="height:60px;">
+<div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+{"symbol": "OANDA:XAGUSD","colorTheme": "dark","isTransparent": true,"locale": "es","width": "100%"}
+</script>
+</div>
+</div>
+<noscript><div class="stat-tile"><div class="label">Plata XAG/USD</div><div class="value mono">$59.39</div><div class="delta up">+1.10%</div></div></noscript><div class="asof">22-jul-2026 · TradingView en vivo (fallback: snapshot de esta corrida)</div></div><div class="stat-tile"><div class="label">Cobre COMEX</div><div class="tv-widget-container" style="height:60px;">
+<div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+{"symbol": "COMEX:HG1!","colorTheme": "dark","isTransparent": true,"locale": "es","width": "100%"}
+</script>
+</div>
+</div>
+<noscript><div class="stat-tile"><div class="label">Cobre COMEX</div><div class="value mono">$6.56/lb</div><div class="delta up">+3.5% aprox.</div></div></noscript><div class="asof">22-jul-2026 · TradingView en vivo (fallback: snapshot de esta corrida)</div></div><div class="stat-tile"><div class="label">UST 10Y</div><div class="value mono">4.63%</div><div class="delta up">+0.03pp</div><div class="asof">21-jul-2026</div></div><div class="stat-tile"><div class="label">Tasa Fed (rango)</div><div class="value mono">3.50%–3.75%</div><div class="delta flat">sin cambios · FOMC 28-29 jul pendiente</div><div class="asof">22-jul-2026</div></div><div class="stat-tile"><div class="label">Nasdaq Composite</div><div class="tv-widget-container" style="height:60px;">
+<div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+{"symbol": "NASDAQ:IXIC","colorTheme": "dark","isTransparent": true,"locale": "es","width": "100%"}
+</script>
+</div>
+</div>
+<noscript><div class="stat-tile"><div class="label">Nasdaq Composite</div><div class="value mono">25,837.21</div><div class="delta up">+1.29%</div></div></noscript><div class="asof">cierre 21-jul-2026 · TradingView en vivo (fallback: snapshot de esta corrida)</div></div>
+    <div class="stat-tile"><div class="label">BTC/XAUUSD</div><div class="value mono">16.06 oz oro/BTC</div><div class="delta flat">BTC $65,858.69</div><div class="asof">22-jul-2026, 6:15am ET</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Mineras — precio y variación diaria</h2>
+  <div class="table-wrap"><table>
+  <tr><th>Ticker</th><th>Empresa</th><th>Precio</th><th>Var. diaria</th><th>As of</th><th>Confianza</th></tr>
+  <tr><td>NEM</td><td>Newmont</td><td>$92.49</td><td class="up">+3.7%</td><td>21-jul-2026</td><td><span class="tag">Media</span></td></tr>
+  <tr><td>B</td><td>Barrick Mining</td><td>$36.37</td><td class="up">+4.2% (implícito)</td><td>22-jul-2026</td><td><span class="tag">Media</span></td></tr>
+  <tr><td>FCX</td><td>Freeport-McMoRan</td><td>$68.68</td><td class="down">-0.55%</td><td>22-jul-2026</td><td><span class="tag">Media</span></td></tr>
+  <tr><td>SCCO</td><td>Southern Copper</td><td>$176.78</td><td class="down">-6.22% (no corroborado)</td><td>22-jul-2026</td><td><span class="tag nodata">Baja — verificar</span></td></tr>
+  <tr><td>ERO</td><td>Ero Copper (NYSE)</td><td>$27.44</td><td><span class="tag nodata">Sin dato confiable</span></td><td>21-jul-2026</td><td><span class="tag nodata">Baja</span></td></tr>
+  <tr><td>TECK</td><td>Teck Resources</td><td>$56.81</td><td class="up">+4.28%</td><td>22-jul-2026</td><td><span class="tag">Media</span></td></tr>
+  </table></div>
+</div>
+
+<div class="section">
+  <h2>ETFs mineros / metales</h2>
+  <div class="table-wrap"><table>
+  <tr><th>Ticker</th><th>Nombre</th><th>Precio</th><th>Var. diaria</th><th>As of</th></tr>
+  <tr><td>GDX</td><td>VanEck Gold Miners</td><td>$74.17</td><td class="up">+4.8% (implícito)</td><td>21-jul-2026</td></tr>
+  <tr><td>GDXJ</td><td>VanEck Jr. Gold Miners</td><td>$97.21</td><td><span class="tag nodata">Sin dato confiable</span></td><td>21-jul-2026</td></tr>
+  <tr><td>SIL</td><td>Global X Silver Miners</td><td>$74.62–$77.12 (rango entre fuentes)</td><td><span class="tag nodata">Sin dato confiable</span></td><td>~22-jul-2026</td></tr>
+  <tr><td>COPX</td><td>Global X Copper Miners</td><td>$73.86–$75.84 (rango entre fuentes)</td><td><span class="tag nodata">Sin dato confiable</span></td><td>22-jul-2026</td></tr>
+  <tr><td>XME</td><td>SPDR S&amp;P Metals &amp; Mining</td><td><span class="tag nodata">Sin dato confiable</span> (última cifra fiable $103.20)</td><td>—</td><td>15-jul-2026</td></tr>
+  <tr><td>PICK</td><td>iShares Global Metals &amp; Mining</td><td>$63.05</td><td><span class="tag nodata">Sin dato confiable</span></td><td>fecha no confirmada</td></tr>
+  </table></div>
+</div>
+
+<div class="section">
+  <h2>Ratios y correlaciones</h2>
+  <div class="stat-grid">
+    <div class="stat-tile"><div class="label">Ratio Oro/Plata</div><div class="value mono">69.04x</div><div class="asof">calculado 22-jul-2026</div></div>
+    <div class="stat-tile"><div class="label">Ratio Oro/Cobre</div><div class="value mono">625.2x</div><div class="asof">calculado 22-jul-2026</div></div>
+    <div class="stat-tile"><div class="label">Correlación Oro/Nasdaq</div><div class="value mono">Sin dato confiable</div><div class="asof">no verificable para jul-2026</div></div>
+  </div>
+</div>
+
+<div class="section shark">
+  <h2>🦈 La lectura del tiburón</h2>
+  <p>El cobre acaba de perforar $6.50/lb y está marcando máximos de seis semanas — eso no es ruido, es un mercado físico apretado: inventarios de Shanghai cayendo 20% en una semana y una tormenta cortando suministro en Chile. Si sos largo en FCX o TECK, este es el viento de cola que estabas esperando; si estás corto, te están cazando.</p>
+  <p>El oro en $4,101 con la plata en $59 y un ratio oro/plata en 69x me dice que el "hedge de régimen" sigue vivo, pero la plata corriendo más rápido que el oro (ratio comprimiéndose) es la señal clásica de que el dinero especulativo está entrando, no solo el dinero de cobertura institucional. Cuidado con perseguir ese momentum sin stop.</p>
+  <p>La Fed todavía no habló — la reunión del 28-29 de julio es el catalizador real de la semana, no lo que ya vimos hoy. Con el mercado pricing "sin cambios", cualquier sorpresa hawkish golpea primero a las mineras apalancadas (GDXJ, junior miners) antes que al metal spot. Ese es el asimétrico que yo estaría vigilando, no el spot mismo.</p>
+  <div class="signature">— Análisis de régimen, no consejo de posición. Verificá el tape antes de apretar el gatillo.</div>
+</div>
+
+<div class="section grid2">
+  <div class="riskbox">
+    <h3>Riesgos</h3>
+    <ul>
+      <li>Resultado FOMC 28-29 jul pendiente — puede revertir el rally de mineras de un día para otro.</li>
+      <li>Datos de SCCO (-6.22%) y ERO sin corroboración de segunda fuente — riesgo de dato erróneo.</li>
+      <li>XME sin cotización confiable reciente — posible gap de liquidez o de cobertura de datos.</li>
+    </ul>
+  </div>
+  <div class="riskbox">
+    <h3>Oportunidades</h3>
+    <ul>
+      <li>Ruptura de cobre por encima de $6.50/lb con soporte de fundamentales de oferta (Chile, China).</li>
+      <li>Ratio oro/plata en 69x — histórico de reversión hacia la media si continúa el momentum de plata.</li>
+      <li>NEM, TECK y B reportan resultados esta semana (23-jul) — catalizador de volatilidad a corto plazo.</li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <h4>Fuentes citadas en esta corrida</h4>
+  <ul>
+<li>RioTimesOnline — Gold and Silver Prices, July 22 2026</li>
+<li>FXStreet — Silver price today, July 22 2026</li>
+<li>Fortune — Current price of Bitcoin, July 22 2026</li>
+<li>The National News — Copper prices volatility, July 22 2026</li>
+<li>TradingEconomics — US 10Y Bond Yield / Copper; CNBC — Treasury yields, July 22 2026</li>
+<li>FedRateCalc — FOMC Meeting Schedule July 2026; Money Morning — Fed FOMC July 28-29 2026</li>
+<li>Yahoo Finance / KuCoin — Nasdaq Composite close, July 21-22 2026</li>
+<li>GuruFocus, Pluang, CNN, agregadores de mercado — cotizaciones de mineras y ETFs (ver notas de confianza por dato)</li>
+</ul>
+  <h4>Limitaciones y modo de operación</h4>
+  <p>Modo de operación: Versión A (este documento si es Artifact) = snapshot puro sin intento de datos en vivo. Versión B (archivos en <code>live/</code> del repo) = widgets TradingView en vivo + este mismo análisis snapshot.</p>
+<p>Varias cotizaciones (SCCO, ERO, XME, SIL, COPX, GDXJ) presentaron discrepancias entre fuentes o fechas no confirmadas para el 22-jul-2026; se etiquetan explícitamente como confianza media/baja o "Sin dato confiable" en vez de forzar una cifra única. La correlación oro/Nasdaq no tiene una cifra verificada disponible para julio 2026.</p>
+  
+<h4>Nota sobre widgets en vivo</h4>
+<p>Los widgets de TradingView muestran precios en tiempo real cuando este archivo se abre en un navegador con conexión a internet (localmente o alojado fuera de claude.ai). El análisis, ratios y comentario del tiburón reflejan datos de esta corrida y NO se actualizan con los widgets.</p>
+  <div class="disclaimer">Esto no constituye asesoría financiera personalizada. Toda decisión de inversión implica riesgo, incluida la posible pérdida del capital.</div>
+</footer>
+</div>
+</body>
+</html>
