@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXELROD CAPITAL — MATRIX 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-bright: #F0CC6A;
+    --gold-dim: #7A6230;
+    --black: #080808;
+    --dark: #0E0D0B;
+    --surface: #141210;
+    --surface2: #1A1815;
+    --border: #2A2620;
+    --text: #E8E0D0;
+    --text-dim: #8A8070;
+    --red: #C0392B;
+    --red-bright: #E74C3C;
+    --green: #27AE60;
+    --green-bright: #2ECC71;
+    --amber: #E67E22;
+    --steel: #95A5A6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* SCAN LINE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+  /* HEADER */
+  .header {
+    padding: 60px 20px 40px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s ease forwards;
+  }
+
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 6vw, 72px);
+    font-weight: 900;
+    color: var(--gold-bright);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.4s ease forwards;
+  }
+
+  .header-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-style: italic;
+    color: var(--text-dim);
+    margin-top: 12px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.6s ease forwards;
+  }
+
+  .header-meta {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.8s ease forwards;
+  }
+
+  .meta-item {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .meta-item span {
+    display: block;
+    color: var(--gold);
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SECTION */
+  .section {
+    padding: 48px 20px;
+    border-bottom: 1px solid var(--border);
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards;
+  }
+
+  .section:nth-child(2) { animation-delay: 0.3s; }
+  .section:nth-child(3) { animation-delay: 0.5s; }
+  .section:nth-child(4) { animation-delay: 0.7s; }
+  .section:nth-child(5) { animation-delay: 0.9s; }
+
+  .section-label {
+    font-size: 9px;
+    letter-spacing: 0.5em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 32px;
+    position: relative;
+    padding-left: 18px;
+  }
+
+  .section-title::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 6px;
+    width: 3px; height: 20px;
+    background: var(--gold);
+  }
+
+  /* CORRELATION MATRIX */
+  .matrix-wrapper {
+    overflow-x: auto;
+    margin: 0 -4px;
+  }
+
+  .matrix {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+
+  .matrix th {
+    padding: 10px 8px;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+  }
+
+  .matrix th.row-label {
+    text-align: left;
+    padding-left: 12px;
+    min-width: 110px;
+  }
+
+  .matrix td {
+    padding: 9px 6px;
+    text-align: center;
+    border: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 500;
+    transition: transform 0.15s;
+    cursor: default;
+  }
+
+  .matrix td:hover { transform: scale(1.1); z-index: 10; position: relative; }
+
+  .matrix td.label {
+    text-align: left;
+    padding-left: 12px;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    background: var(--surface2);
+    white-space: nowrap;
+  }
+
+  .matrix td.diagonal {
+    background: var(--surface);
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  /* Correlation colors */
+  .c-high-pos { background: rgba(39,174,96,0.25); color: #2ECC71; }
+  .c-med-pos  { background: rgba(39,174,96,0.12); color: #A8D8B9; }
+  .c-low-pos  { background: rgba(39,174,96,0.05); color: #6DAF85; }
+  .c-neutral  { background: rgba(255,255,255,0.03); color: var(--text-dim); }
+  .c-low-neg  { background: rgba(192,57,43,0.05); color: #C97E75; }
+  .c-med-neg  { background: rgba(192,57,43,0.12); color: #E08070; }
+  .c-high-neg { background: rgba(192,57,43,0.25); color: #E74C3C; }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* KEY CORRELATIONS */
+  .corr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .corr-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid;
+    padding: 16px 18px;
+    position: relative;
+  }
+
+  .corr-card.positive { border-left-color: var(--green); }
+  .corr-card.negative { border-left-color: var(--red); }
+  .corr-card.mixed    { border-left-color: var(--amber); }
+
+  .corr-pair {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+
+  .corr-value {
+    font-size: 22px;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 6px;
+  }
+
+  .corr-card.positive .corr-value { color: var(--green-bright); }
+  .corr-card.negative .corr-value { color: var(--red-bright); }
+  .corr-card.mixed .corr-value    { color: var(--amber); }
+
+  .corr-desc {
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* REGIME TABLE */
+  .regime-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-top: 8px;
+  }
+
+  .regime-table th {
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .regime-table td {
+    padding: 12px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.6;
+    font-size: 11px;
+  }
+
+  .regime-table tr:hover td { background: var(--surface2); }
+
+  .regime-name {
+    font-weight: 500;
+    color: var(--gold);
+    white-space: nowrap;
+    font-size: 12px;
+  }
+
+  .asset-tag {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 2px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    margin: 2px 2px 2px 0;
+    font-weight: 500;
+  }
+
+  .tag-buy  { background: rgba(39,174,96,0.2);  color: var(--green-bright); border: 1px solid rgba(39,174,96,0.3); }
+  .tag-sell { background: rgba(192,57,43,0.2);  color: var(--red-bright);   border: 1px solid rgba(192,57,43,0.3); }
+  .tag-hold { background: rgba(230,126,34,0.2); color: var(--amber);         border: 1px solid rgba(230,126,34,0.3); }
+
+  /* INVESTMENT STRATEGY */
+  .timeline-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 8px;
+  }
+
+  .timeline-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .timeline-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .timeline-card.short::before { background: var(--red-bright); }
+  .timeline-card.mid::before   { background: var(--amber); }
+  .timeline-card.long::before  { background: var(--green-bright); }
+
+  .timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .timeline-label {
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .timeline-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 4px;
+  }
+
+  .timeline-period {
+    font-size: 11px;
+    color: var(--text-dim);
+    background: var(--surface);
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+  }
+
+  .play-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+  }
+
+  .play-rank {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--gold-dim);
+    min-width: 20px;
+    margin-top: 2px;
+  }
+
+  .play-body {}
+
+  .play-asset {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .play-thesis {
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .play-target {
+    display: inline-block;
+    margin-top: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    background: rgba(201,168,76,0.12);
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+  }
+
+  /* AXELROD VERDICT */
+  .verdict-box {
+    background: var(--surface2);
+    border: 1px solid var(--gold-dim);
+    padding: 28px;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .verdict-box::before {
+    content: '"';
+    position: absolute;
+    top: -20px; left: 16px;
+    font-family: 'Playfair Display', serif;
+    font-size: 120px;
+    color: rgba(201,168,76,0.08);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .verdict-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-style: italic;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .verdict-text strong {
+    font-style: normal;
+    color: var(--gold-bright);
+  }
+
+  .verdict-sig {
+    margin-top: 20px;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+  }
+
+  /* RISK MATRIX */
+  .risk-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    margin-top: 8px;
+  }
+
+  .risk-cell {
+    padding: 18px;
+    border: 1px solid var(--border);
+  }
+
+  .risk-quad {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .risk-items { list-style: none; }
+  .risk-items li {
+    font-size: 11px;
+    color: var(--text);
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+  }
+
+  .risk-items li::before {
+    content: '▸';
+    color: var(--gold-dim);
+    flex-shrink: 0;
+  }
+
+  .risk-items li:last-child { border-bottom: none; }
+
+  /* TICKER STRIP */
+  .ticker {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ticker-inner {
+    display: flex;
+    gap: 48px;
+    animation: ticker 25s linear infinite;
+    white-space: nowrap;
+  }
+
+  .ticker-item {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .ticker-item .name { color: var(--gold); font-weight: 500; }
+  .ticker-item .up   { color: var(--green-bright); }
+  .ticker-item .dn   { color: var(--red-bright); }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* FOOTER */
+  .footer {
+    padding: 28px 20px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer span { color: var(--gold-dim); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--black); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+  /* MOBILE */
+  @media (max-width: 600px) {
+    .header-meta { gap: 20px; flex-wrap: wrap; }
+    .timeline-grid { grid-template-columns: 1fr; }
+    .corr-grid { grid-template-columns: 1fr; }
+    .risk-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-eyebrow">Axelrod Capital Intelligence — Confidential — Datos en vivo 20 Jul 2026</div>
+  <div class="header-title">MATRIX 2026</div>
+  <div class="header-sub">Correlaciones de Activos Globales · Estrategia de Posicionamiento</div>
+  <div class="header-meta">
+    <div class="meta-item">Universo<span>$700T+ Nocional</span></div>
+    <div class="meta-item">Activos<span>18 Clases</span></div>
+    <div class="meta-item">Horizonte<span>Corto · Medio · Largo</span></div>
+    <div class="meta-item">Framework<span>Axelrod Protocol</span></div>
+  </div>
+</header>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <div class="ticker-item"><span class="name">BTC</span> $96,262 <span class="dn">−1.0%</span></div>
+    <div class="ticker-item"><span class="name">GOLD</span> $4,024/oz <span class="up">+17.2% i.a.</span></div>
+    <div class="ticker-item"><span class="name">NVIDIA</span> ~$203.50 <span class="dn">−2.2%</span></div>
+    <div class="ticker-item"><span class="name">US10Y</span> ~4.23% <span class="dn">−0.02</span></div>
+    <div class="ticker-item"><span class="name">DXY</span> 100.70 <span class="up">+0.05%</span></div>
+    <div class="ticker-item"><span class="name">COPPER</span> $6.32/lb <span class="up">+1.1%</span></div>
+    <div class="ticker-item"><span class="name">RWA TOKEN</span> $33.5B <span class="up">+184% i.a.</span></div>
+    <div class="ticker-item"><span class="name">CRUDE WTI</span> ~$82.90 <span class="up">+1.4%</span></div>
+    <!-- duplicated for seamless loop -->
+    <div class="ticker-item"><span class="name">BTC</span> $96,262 <span class="dn">−1.0%</span></div>
+    <div class="ticker-item"><span class="name">GOLD</span> $4,024/oz <span class="up">+17.2% i.a.</span></div>
+    <div class="ticker-item"><span class="name">NVIDIA</span> ~$203.50 <span class="dn">−2.2%</span></div>
+    <div class="ticker-item"><span class="name">US10Y</span> ~4.23% <span class="dn">−0.02</span></div>
+    <div class="ticker-item"><span class="name">DXY</span> 100.70 <span class="up">+0.05%</span></div>
+    <div class="ticker-item"><span class="name">COPPER</span> $6.32/lb <span class="up">+1.1%</span></div>
+    <div class="ticker-item"><span class="name">RWA TOKEN</span> $33.5B <span class="up">+184% i.a.</span></div>
+    <div class="ticker-item"><span class="name">CRUDE WTI</span> ~$82.90 <span class="up">+1.4%</span></div>
+  </div>
+</div>
+
+<!-- SECTION 1: CORRELATION MATRIX -->
+<div class="section">
+  <div class="container">
+    <div class="section-label">Análisis I</div>
+    <div class="section-title">Matriz de Correlación de Activos</div>
+
+    <div class="matrix-wrapper">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th class="row-label">Activo → / ↓</th>
+            <th>BTC</th>
+            <th>ALT</th>
+            <th>ORO</th>
+            <th>PLATA</th>
+            <th>ACCIONES</th>
+            <th>BONOS</th>
+            <th>TASAS</th>
+            <th>USD</th>
+            <th>PETRÓLEO</th>
+            <th>COBRE</th>
+            <th>RWA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label">BTC</td>
+            <td class="diagonal">1.00</td>
+            <td class="c-high-pos">+0.90</td>
+            <td class="c-low-pos">+0.25</td>
+            <td class="c-med-pos">+0.35</td>
+            <td class="c-med-pos">+0.55</td>
+            <td class="c-low-neg">−0.20</td>
+            <td class="c-med-neg">−0.45</td>
+            <td class="c-med-neg">−0.38</td>
+            <td class="c-low-pos">+0.15</td>
+            <td class="c-med-pos">+0.40</td>
+            <td class="c-high-pos">+0.75</td>
+          </tr>
+          <tr>
+            <td class="label">ALTCOINS</td>
+            <td class="c-high-pos">+0.90</td>
+            <td class="diagonal">1.00</td>
+            <td class="c-low-pos">+0.18</td>
+            <td class="c-low-pos">+0.28</td>
+            <td class="c-med-pos">+0.50</td>
+            <td class="c-low-neg">−0.22</td>
+            <td class="c-high-neg">−0.55</td>
+            <td class="c-med-neg">−0.42</td>
+            <td class="c-low-pos">+0.10</td>
+            <td class="c-med-pos">+0.35</td>
+            <td class="c-med-pos">+0.65</td>
+          </tr>
+          <tr>
+            <td class="label">ORO</td>
+            <td class="c-low-pos">+0.25</td>
+            <td class="c-low-pos">+0.18</td>
+            <td class="diagonal">1.00</td>
+            <td class="c-high-pos">+0.82</td>
+            <td class="c-low-neg">−0.12</td>
+            <td class="c-med-pos">+0.45</td>
+            <td class="c-high-neg">−0.60</td>
+            <td class="c-high-neg">−0.65</td>
+            <td class="c-low-pos">+0.20</td>
+            <td class="c-med-pos">+0.40</td>
+            <td class="c-med-pos">+0.50</td>
+          </tr>
+          <tr>
+            <td class="label">PLATA</td>
+            <td class="c-med-pos">+0.35</td>
+            <td class="c-low-pos">+0.28</td>
+            <td class="c-high-pos">+0.82</td>
+            <td class="diagonal">1.00</td>
+            <td class="c-low-pos">+0.22</td>
+            <td class="c-low-pos">+0.30</td>
+            <td class="c-med-neg">−0.48</td>
+            <td class="c-med-neg">−0.52</td>
+            <td class="c-med-pos">+0.38</td>
+            <td class="c-high-pos">+0.70</td>
+            <td class="c-med-pos">+0.45</td>
+          </tr>
+          <tr>
+            <td class="label">ACCIONES</td>
+            <td class="c-med-pos">+0.55</td>
+            <td class="c-med-pos">+0.50</td>
+            <td class="c-low-neg">−0.12</td>
+            <td class="c-low-pos">+0.22</td>
+            <td class="diagonal">1.00</td>
+            <td class="c-low-neg">−0.30</td>
+            <td class="c-med-neg">−0.52</td>
+            <td class="c-low-pos">+0.15</td>
+            <td class="c-low-pos">+0.18</td>
+            <td class="c-med-pos">+0.55</td>
+            <td class="c-med-pos">+0.60</td>
+          </tr>
+          <tr>
+            <td class="label">BONOS TESORO</td>
+            <td class="c-low-neg">−0.20</td>
+            <td class="c-low-neg">−0.22</td>
+            <td class="c-med-pos">+0.45</td>
+            <td class="c-low-pos">+0.30</td>
+            <td class="c-low-neg">−0.30</td>
+            <td class="diagonal">1.00</td>
+            <td class="c-high-neg">−0.95</td>
+            <td class="c-low-pos">+0.28</td>
+            <td class="c-low-neg">−0.15</td>
+            <td class="c-low-neg">−0.18</td>
+            <td class="c-low-neg">−0.22</td>
+          </tr>
+          <tr>
+            <td class="label">TASAS INTERÉS</td>
+            <td class="c-med-neg">−0.45</td>
+            <td class="c-high-neg">−0.55</td>
+            <td class="c-high-neg">−0.60</td>
+            <td class="c-med-neg">−0.48</td>
+            <td class="c-med-neg">−0.52</td>
+            <td class="c-high-neg">−0.95</td>
+            <td class="diagonal">1.00</td>
+            <td class="c-med-pos">+0.45</td>
+            <td class="c-low-pos">+0.20</td>
+            <td class="c-low-neg">−0.22</td>
+            <td class="c-med-neg">−0.40</td>
+          </tr>
+          <tr>
+            <td class="label">USD (DXY)</td>
+            <td class="c-med-neg">−0.38</td>
+            <td class="c-med-neg">−0.42</td>
+            <td class="c-high-neg">−0.65</td>
+            <td class="c-med-neg">−0.52</td>
+            <td class="c-low-pos">+0.15</td>
+            <td class="c-low-pos">+0.28</td>
+            <td class="c-med-pos">+0.45</td>
+            <td class="diagonal">1.00</td>
+            <td class="c-med-pos">+0.38</td>
+            <td class="c-low-neg">−0.25</td>
+            <td class="c-med-neg">−0.35</td>
+          </tr>
+          <tr>
+            <td class="label">PETRÓLEO</td>
+            <td class="c-low-pos">+0.15</td>
+            <td class="c-low-pos">+0.10</td>
+            <td class="c-low-pos">+0.20</td>
+            <td class="c-med-pos">+0.38</td>
+            <td class="c-low-pos">+0.18</td>
+            <td class="c-low-neg">−0.15</td>
+            <td class="c-low-pos">+0.20</td>
+            <td class="c-med-pos">+0.38</td>
+            <td class="diagonal">1.00</td>
+            <td class="c-med-pos">+0.48</td>
+            <td class="c-low-pos">+0.12</td>
+          </tr>
+          <tr>
+            <td class="label">COBRE</td>
+            <td class="c-med-pos">+0.40</td>
+            <td class="c-med-pos">+0.35</td>
+            <td class="c-med-pos">+0.40</td>
+            <td class="c-high-pos">+0.70</td>
+            <td class="c-med-pos">+0.55</td>
+            <td class="c-low-neg">−0.18</td>
+            <td class="c-low-neg">−0.22</td>
+            <td class="c-low-neg">−0.25</td>
+            <td class="c-med-pos">+0.48</td>
+            <td class="diagonal">1.00</td>
+            <td class="c-med-pos">+0.42</td>
+          </tr>
+          <tr>
+            <td class="label">RWA TOKENS</td>
+            <td class="c-high-pos">+0.75</td>
+            <td class="c-med-pos">+0.65</td>
+            <td class="c-med-pos">+0.50</td>
+            <td class="c-med-pos">+0.45</td>
+            <td class="c-med-pos">+0.60</td>
+            <td class="c-low-neg">−0.22</td>
+            <td class="c-med-neg">−0.40</td>
+            <td class="c-med-neg">−0.35</td>
+            <td class="c-low-pos">+0.12</td>
+            <td class="c-med-pos">+0.42</td>
+            <td class="diagonal">1.00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(39,174,96,0.4)"></div>Correlación Alta Positiva (+0.7 a +1.0)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(39,174,96,0.2)"></div>Correlación Media Positiva (+0.3 a +0.7)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(39,174,96,0.08)"></div>Correlación Baja Positiva (0 a +0.3)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(192,57,43,0.08)"></div>Correlación Baja Negativa (0 a −0.3)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(192,57,43,0.2)"></div>Correlación Media Negativa (−0.3 a −0.7)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(192,57,43,0.4)"></div>Correlación Alta Negativa (−0.7 a −1.0)</div>
+    </div>
+    <div style="margin-top:14px;font-size:9px;letter-spacing:0.05em;color:var(--text-dim);">Nota: coeficientes estructurales de referencia (rolling histórico), no recalculados en tiempo real.</div>
+  </div>
+</div>
+
+<!-- SECTION 2: KEY CORRELATION PATTERNS -->
+<div class="section">
+  <div class="container">
+    <div class="section-label">Análisis II</div>
+    <div class="section-title">Patrones Críticos de Correlación</div>
+
+    <div class="corr-grid">
+
+      <div class="corr-card positive">
+        <div class="corr-pair">BTC ↔ ALTCOINS</div>
+        <div class="corr-value">+0.90</div>
+        <div class="corr-desc">La correlación más alta del universo cripto. BTC es el lider; las altcoins son su sombra amplificada. Cuando BTC cae 10%, las altcoins caen 15–25%. Con BTC sosteniéndose cerca de $96,300, las alts han seguido ese momentum con beta amplificado. No hay diversificación real dentro del ecosistema cripto.</div>
+      </div>
+
+      <div class="corr-card negative">
+        <div class="corr-pair">TASAS DE INTERÉS ↔ TODO</div>
+        <div class="corr-value">El mayor destructor</div>
+        <div class="corr-desc">Tasas altas destruyen BTC (−0.45), Oro (−0.60), Acciones (−0.52), y son prácticamente la inversa perfecta de los Bonos del Tesoro (−0.95). Con el 10Y rondando 4.2%–4.3% (fuentes en vivo divergen entre 4.2% y 4.5% según el momento de la sesión) y el mercado descontando probabilidad no trivial de una subida de la Fed en septiembre de 2026, este vínculo volvió a ser el trade más importante del año — pero en la dirección contraria a la de hace un año.</div>
+      </div>
+
+      <div class="corr-card negative">
+        <div class="corr-pair">USD (DXY) ↔ ORO / BTC</div>
+        <div class="corr-value">−0.65 / −0.38</div>
+        <div class="corr-desc">Dólar débil = Oro y BTC fuertes, en teoría. Pero el DXY se ha mantenido relativamente estable en 2026 (~100.7, +2.9% interanual) tras rebotar desde mínimos de julio, lo que ha neutralizado gran parte del viento de cola que ambos activos disfrutaron en 2025. Axelrod sigue monitoreando el DXY antes que cualquier otro ticker.</div>
+      </div>
+
+      <div class="corr-card positive">
+        <div class="corr-pair">ORO ↔ PLATA</div>
+        <div class="corr-value">+0.82</div>
+        <div class="corr-desc">La plata sigue al oro con beta alto (1.4x). Pero la plata tiene además correlación industrial con el cobre (+0.70). Es el activo con doble función: refugio monetario + demanda de electrificación. Con el oro corrigiendo −4% en el último mes tras marcar máximos por encima de $4,000/oz, la plata es el barómetro a vigilar para confirmar si la corrección es sana o estructural.</div>
+      </div>
+
+      <div class="corr-card positive">
+        <div class="corr-pair">COBRE ↔ ACCIONES / PLATA</div>
+        <div class="corr-value">+0.55 / +0.70</div>
+        <div class="corr-desc">El cobre es el termómetro de la economía real. A $6.32/lb y +12% interanual, sigue confirmando demanda estructural de electrificación y centros de datos de IA pese a la volatilidad geopolítica reciente (disrupciones logísticas en Chile, tensión Medio Oriente).</div>
+      </div>
+
+      <div class="corr-card mixed">
+        <div class="corr-pair">RWA TOKENS ↔ BTC + ACCIONES</div>
+        <div class="corr-value">+0.75 / +0.60</div>
+        <div class="corr-desc">Los RWA tokens heredan la correlación de sus activos subyacentes, pero añaden la prima de liquidez cripto. El sector (ex-stablecoins) llegó a $33.5B en julio de 2026, casi triplicando su valor interanual, con adopción institucional acelerando (BUIDL de BlackRock cotizando on-chain, piloto DTCC con 50+ firmas). Sigue siendo el activo de convergencia entre TradFi y DeFi.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: MACRO REGIMES -->
+<div class="section">
+  <div class="container">
+    <div class="section-label">Análisis III</div>
+    <div class="section-title">Qué Comprar Según el Régimen Macro</div>
+
+    <table class="regime-table">
+      <thead>
+        <tr>
+          <th>Régimen</th>
+          <th>Condición</th>
+          <th>COMPRAR</th>
+          <th>VENDER / EVITAR</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="regime-name">RISK-ON</div></td>
+          <td style="font-size:10px;color:var(--text-dim)">Tasas bajas, economía creciendo, USD débil</td>
+          <td>
+            <span class="asset-tag tag-buy">BTC</span>
+            <span class="asset-tag tag-buy">ALTCOINS</span>
+            <span class="asset-tag tag-buy">ACCIONES TECH</span>
+            <span class="asset-tag tag-buy">COBRE</span>
+            <span class="asset-tag tag-buy">RWA</span>
+          </td>
+          <td>
+            <span class="asset-tag tag-sell">BONOS TESORO</span>
+            <span class="asset-tag tag-sell">USD</span>
+          </td>
+        </tr>
+        <tr>
+          <td><div class="regime-name">RISK-OFF</div></td>
+          <td style="font-size:10px;color:var(--text-dim)">Tasas altas, recesión, USD fuerte</td>
+          <td>
+            <span class="asset-tag tag-buy">ORO</span>
+            <span class="asset-tag tag-buy">BONOS CORTO PLAZO</span>
+            <span class="asset-tag tag-buy">USD</span>
+          </td>
+          <td>
+            <span class="asset-tag tag-sell">BTC</span>
+            <span class="asset-tag tag-sell">ALTCOINS</span>
+            <span class="asset-tag tag-sell">ACCIONES GROWTH</span>
+            <span class="asset-tag tag-sell">CRÉDITO PRIVADO</span>
+          </td>
+        </tr>
+        <tr>
+          <td><div class="regime-name">ESTANFLACIÓN</div></td>
+          <td style="font-size:10px;color:var(--text-dim)">Inflación alta + recesión. El peor escenario</td>
+          <td>
+            <span class="asset-tag tag-buy">ORO</span>
+            <span class="asset-tag tag-buy">PLATA</span>
+            <span class="asset-tag tag-buy">PETRÓLEO</span>
+            <span class="asset-tag tag-buy">BTC (digital gold)</span>
+          </td>
+          <td>
+            <span class="asset-tag tag-sell">BONOS LARGOS</span>
+            <span class="asset-tag tag-sell">ACCIONES GROWTH</span>
+            <span class="asset-tag tag-sell">REAL ESTATE</span>
+          </td>
+        </tr>
+        <tr>
+          <td><div class="regime-name">PIVOTE FED</div></td>
+          <td style="font-size:10px;color:var(--text-dim)">Fed inicia ciclo de bajada de tasas</td>
+          <td>
+            <span class="asset-tag tag-buy">BTC</span>
+            <span class="asset-tag tag-buy">ORO</span>
+            <span class="asset-tag tag-buy">PLATA</span>
+            <span class="asset-tag tag-buy">BONOS LARGOS</span>
+            <span class="asset-tag tag-buy">RWA TOKENS</span>
+          </td>
+          <td>
+            <span class="asset-tag tag-sell">USD</span>
+            <span class="asset-tag tag-sell">CASH</span>
+          </td>
+        </tr>
+        <tr>
+          <td><div class="regime-name">2026 ACTUAL</div></td>
+          <td style="font-size:10px;color:var(--text-dim)">10Y en zona 4.2%–4.3%; USD estable; oro corrigiendo desde máximos; BTC firme cerca de $96,000; petróleo elevado (~$83) por escalada EEUU–Irán</td>
+          <td>
+            <span class="asset-tag tag-buy">ORO (posición estratégica)</span>
+            <span class="asset-tag tag-buy">COBRE</span>
+            <span class="asset-tag tag-buy">NVIDIA</span>
+            <span class="asset-tag tag-buy">BTC</span>
+            <span class="asset-tag tag-hold">RWA TOKENS (selectivo)</span>
+          </td>
+          <td>
+            <span class="asset-tag tag-sell">BONOS LARGOS</span>
+            <span class="asset-tag tag-sell">PETRÓLEO (spike geopolítico, no estructural)</span>
+            <span class="asset-tag tag-hold">ALTCOINS (selectivo)</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 4: INVESTMENT STRATEGY BY HORIZON -->
+<div class="section">
+  <div class="container">
+    <div class="section-label">Estrategia Axelrod</div>
+    <div class="section-title">Posicionamiento por Horizonte Temporal</div>
+
+    <div class="timeline-grid">
+
+      <!-- SHORT TERM -->
+      <div class="timeline-card short">
+        <div class="timeline-header">
+          <div>
+            <div class="timeline-label">Horizonte</div>
+            <div class="timeline-name">CORTO PLAZO</div>
+          </div>
+          <div class="timeline-period">0 – 12 meses</div>
+        </div>
+
+        <div class="play-item">
+          <div class="play-rank">01</div>
+          <div class="play-body">
+            <div class="play-asset">Oro / Oro Tokenizado (XAUt, PAXG)</div>
+            <div class="play-thesis">$4,024/oz, +17% interanual pero corrigiendo −4% en el último mes desde máximos por encima de $4,000. Compras de bancos centrales y demanda de refugio siguen firmes; Axelrod no pelea contra la tendencia de fondo, pero exige confirmación de soporte tras la corrección reciente.</div>
+            <div class="play-target">Peso: 25–30%</div>
+          </div>
+        </div>
+
+        <div class="play-item">
+          <div class="play-rank">02</div>
+          <div class="play-body">
+            <div class="play-asset">BTC (posición táctica)</div>
+            <div class="play-thesis">A $96,262, BTC se sostiene cerca de sus niveles altos del ciclo pese al entorno de tasas restrictivas. La correlación inversa con el DXY sigue intacta como marco; con el dólar estable en vez de débil, la fortaleza de BTC refleja más flujo institucional propio que viento de cola macro. No se toca con altcoins en entorno de tasas inciertas.</div>
+            <div class="play-target">Peso: 15–20%</div>
+          </div>
+        </div>
+
+        <div class="play-item">
+          <div class="play-rank">03</div>
+          <div class="play-body">
+            <div class="play-asset">Crédito Privado Tokenizado</div>
+            <div class="play-thesis">Rendimiento 12–15% con colateral real, dentro de un sector RWA que ya suma $33.5B ex-stablecoins (y más de $240B incluyendo stablecoins). Sigue siendo el activo con mejor ratio yield/riesgo del mercado cripto hoy.</div>
+            <div class="play-target">Peso: 15%</div>
+          </div>
+        </div>
+
+        <div class="play-item">
+          <div class="play-rank">04</div>
+          <div class="play-body">
+            <div class="play-asset">NVIDIA (acciones / opciones selectivas)</div>
+            <div class="play-thesis">~$203.50, −2.2% en la sesión tras un máximo de 52 semanas de $236.54. La demanda de cómputo IA no se ha revertido; la corrección es de valuación, no de tesis. Volatilidad alta pero en la dirección correcta a mediano plazo.</div>
+            <div class="play-target">Peso: 12%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MEDIUM TERM -->
+      <div class="timeline-card mid">
+        <div class="timeline-header">
+          <div>
+            <div class="timeline-label">Horizonte</div>
+            <div class="timeline-name">MEDIO PLAZO</div>
+          </div>
+          <div class="timeline-period">1 – 3 años</div>
+        </div>
+
+        <div class="play-item">
+          <div class="play-rank">01</div>
+          <div class="play-body">
+            <div class="play-asset">RWA Tokens (sector completo)</div>
+            <div class="play-thesis">De $33.5B hoy (ex-stablecoins) a un rango proyectado de $300–500B en 3 años. Es la convergencia de TradFi y DeFi, ya con BlackRock y Franklin Templeton dentro y la DTCC pilotando con 50+ firmas desde mayo de 2026. Actuar antes de la institucionalización masiva.</div>
+            <div class="play-target">Peso: 20–25%</div>
+          </div>
+        </div>
+
+        <div class="play-item">
+          <div class="play-rank">02</div>
+          <div class="play-body">
+            <div class="play-asset">Cobre / ETFs de Cobre</div>
+            <div class="play-thesis">A $6.32/lb (+12% interanual), la electrificación global + IA (centros de datos) + vehículos eléctricos siguen generando demanda estructural, incluso con disrupciones puntuales de oferta (clima en Chile, tensión geopolítica). Saudi Aramco del siglo XXI.</div>
+            <div class="play-target">Peso: 15%</div>
+          </div>
+        </div>
+
+        <div class="play-item">
+          <div class="play-rank">03</div>
+          <div class="play-body">
+            <div class="play-asset">Bitcoin (posición core)</div>
+            <div class="play-thesis">Post-halving 2024 + ETFs institucionales + BTC sosteniéndose cerca de $96,000 pese a un entorno de tasas restrictivo confirman la tesis. El activo más asimétrico del universo. Horizonte mínimo de 2 ciclos; acumulación escalonada para gestionar la volatilidad del entorno de tasas actual.</div>
+            <div class="play-target">Peso: 15%</div>
+          </div>
+        </div>
+
+        <div class="play-item">
+          <div class="play-rank">04</div>
+          <div class="play-body">
+            <div class="play-asset">Plata física / ETFs</div>
+            <div class="play-thesis">Beta del oro (1.4x) + demanda industrial (electrificación, paneles solares). El metal más barato relativo a su utilidad estructural. Correlación alta con cobre (+0.70) cuando el mundo se electrifica.</div>
+            <div class="play-target">Peso: 10%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LONG TERM -->
+      <div class="timeline-card long">
+        <div class="timeline-header">
+          <div>
+            <div class="timeline-label">Horizonte</div>
+            <div class="timeline-name">LARGO PLAZO</div>
+          </div>
+          <div class="timeline-period">3 – 10 años</div>
+        </div>
+
+        <div class="play-item">
+          <div class="play-rank">01</div>
+          <div class="play-body">
+            <div class="play-asset">Bitcoin como reserva de valor</div>
+            <div class="play-thesis">En 10 años, los estados-nación estarán acumulando BTC como reserva (ya lo hace El Salvador, Bhutan, parcialmente EEUU). La capitalización actual (~$1.9T con BTC en $96,262) sigue siendo una fracción del oro (~$21T). La asimetría más grande del portafolio, si se sobrevive la volatilidad.</div>
+            <div class="play-target">Peso: 20–30%</div>
+          </div>
+        </div>
+
+        <div class="play-item">
+          <div class="play-rank">02</div>
+          <div class="play-body">
+            <div class="play-asset">NVIDIA / Semiconductores (TSMC)</div>
+            <div class="play-thesis">El petróleo del siglo XXI es la capacidad de cómputo. NVIDIA y TSMC son la Saudi Aramco y el gasoducto de la era IA. Monopolio técnico + demanda exponencial, incluso tras la corrección reciente de valuación.</div>
+            <div class="play-target">Peso: 15%</div>
+          </div>
+        </div>
+
+        <div class="play-item">
+          <div class="play-rank">03</div>
+          <div class="play-body">
+            <div class="play-asset">Real Estate Tokenizado</div>
+            <div class="play-thesis">El mercado inmobiliario global ($326T) tiene liquidez cercana a cero. La tokenización lo transforma. Con el sector RWA total ya superando $240B (incluyendo stablecoins) en 2026, una fracción tokenizada de ese mercado en 10 años es un múltiplo del tamaño actual del sector.</div>
+            <div class="play-target">Peso: 10%</div>
+          </div>
+        </div>
+
+        <div class="play-item">
+          <div class="play-rank">04</div>
+          <div class="play-body">
+            <div class="play-asset">Oro físico (reserva estratégica)</div>
+            <div class="play-thesis">No es un trade. Es el seguro del portafolio. Cuando todo lo demás falla (guerra, defaults soberanos, colapso de divisas), el oro es lo único que no requiere contraparte. Posición permanente mínima del 10%, independiente de correcciones de corto plazo como la actual.</div>
+            <div class="play-target">Peso: 10% permanente</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: AXELROD VERDICT -->
+<div class="section">
+  <div class="container">
+    <div class="section-label">Veredicto Final</div>
+    <div class="section-title">La Jugada de Axelrod</div>
+
+    <div class="verdict-box">
+      <div class="verdict-text">
+        El mercado de julio 2026 no es el de hace un año. El USD dejó de debilitarse de forma sostenida (DXY ~100.7, +2.9% interanual), el 10Y se mueve en la zona de 4.2%–4.3% con el mercado descontando una probabilidad no trivial de <strong>una subida de la Fed en septiembre</strong>, y aun así BTC se sostiene cerca de $96,300 mientras Irán y EEUU escalan un conflicto que mantiene al crudo WTI elevado en torno a $82–84. <strong>El régimen es mixto: resiliencia en activos de reserva alternativa, pero dominado por riesgo geopolítico y una Fed que todavía no confirma el pivote.</strong>
+        <br><br>
+        El error que comete el 90% de los inversores sigue siendo el mismo: tratar a BTC y a las altcoins como el mismo activo. BTC es el activo de reserva soberano; las altcoins son beta puro. En entornos de tasas inciertas, BTC sostiene su nivel; las altcoins amplifican cualquier corrección. Elige una correlación, no las dos.
+        <br><br>
+        Mi posición si entrara hoy: <strong>28% Oro físico + tokenizado. 20% BTC. 20% RWA tokens (crédito privado). 15% Cobre/Plata. 12% NVIDIA. 5% cash táctico.</strong> Cero bonos largos mientras la Fed no confirme el pivote. Cero altcoins genéricas. Cero petróleo nuevo — el spike actual es geopolítico, no estructural, y no se invierte en pánico bélico.
+        <br><br>
+        La única cobertura real es no necesitar una. En un régimen que gira de risk-on a defensivo en cuestión de meses, la disciplina de posición importa más que la convicción en la narrativa.
+      </div>
+      <div class="verdict-sig">— Bobby Axelrod Protocol · Axelrod Capital Intelligence · Actualizado 20 Jul 2026</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: RISK MATRIX -->
+<div class="section">
+  <div class="container">
+    <div class="section-label">Gestión de Riesgo</div>
+    <div class="section-title">Matriz de Riesgos Críticos</div>
+
+    <div class="risk-grid">
+      <div class="risk-cell" style="background:rgba(192,57,43,0.05)">
+        <div class="risk-quad" style="color:var(--red-bright)">⚠ RIESGO ALTO — MONITOREO DIARIO</div>
+        <ul class="risk-items">
+          <li>Escalada del conflicto EEUU–Irán → crudo WTI en zona $82–84, riesgo de cierre del Estrecho de Ormuz</li>
+          <li>Fed sube tasas en septiembre (mercado ya descuenta ~53% prob.) → presión adicional sobre BTC/acciones/oro</li>
+          <li>Reversión brusca de BTC desde niveles cercanos a $96,000, con correlación BTC-ALTS = 0.90 arrastrando al resto del mercado cripto</li>
+          <li>Regulación adversa de stablecoins/RWA en EEUU pese a la aceleración institucional reciente</li>
+        </ul>
+      </div>
+
+      <div class="risk-cell" style="background:rgba(230,126,34,0.05)">
+        <div class="risk-quad" style="color:var(--amber)">⚡ RIESGO MEDIO — MONITOREO SEMANAL</div>
+        <ul class="risk-items">
+          <li>Concentración RWA en Ethereum → riesgo sistémico de red pese a la diversificación de emisores</li>
+          <li>Corrección del oro (−4% en el último mes) se profundiza si el conflicto en Medio Oriente se enfría de golpe</li>
+          <li>Disrupciones de oferta de cobre (clima en Chile, logística) generan volatilidad de precio de corto plazo</li>
+          <li>Corrección adicional de NVIDIA (ya −2.2% en la sesión) si se moderan expectativas de capex en IA</li>
+        </ul>
+      </div>
+
+      <div class="risk-cell" style="background:rgba(39,174,96,0.05)">
+        <div class="risk-quad" style="color:var(--green-bright)">✓ CATALIZADORES POSITIVOS A VIGILAR</div>
+        <ul class="risk-items">
+          <li>Señal de pausa/recorte de la Fed en vez de suba → activar posición completa BTC + bonos largos</li>
+          <li>Desescalada EEUU–Irán → normalización del crudo y del apetito por riesgo global</li>
+          <li>Nuevas aprobaciones institucionales de RWA (tras BUIDL/DTCC) → aceleración del sector hacia $300B+</li>
+          <li>Demanda sostenida de cobre por infraestructura de IA (centros de datos) pese a shocks de oferta</li>
+        </ul>
+      </div>
+
+      <div class="risk-cell" style="background:rgba(149,165,166,0.05)">
+        <div class="risk-quad" style="color:var(--steel)">✕ ACTIVOS A EVITAR DELIBERADAMENTE</div>
+        <ul class="risk-items">
+          <li>Altcoins genéricas sin fundamentals (puro beta de BTC, sin upside propio)</li>
+          <li>Bonos del Tesoro a largo plazo mientras persista el riesgo de subida de tasas en septiembre</li>
+          <li>Posiciones nuevas en petróleo basadas en el spike geopolítico actual (riesgo de reversión brusca)</li>
+          <li>Derivados nocionales sin comprensión del subyacente ($700T en riesgo)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <span>AXELROD CAPITAL INTELLIGENCE</span> · MATRIX 2026 · Datos de mercado actualizados al 20 de julio de 2026 · Para uso estratégico exclusivo · No constituye asesoramiento financiero regulado
+  </div>
+</footer>
+
+</body>
+</html>

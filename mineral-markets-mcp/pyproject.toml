@@ -1,0 +1,43 @@
+[project]
+name = "mineral-markets-mcp"
+version = "0.1.0"
+description = "Servidor MCP con agente Analista Financiero para metales, mineras e índices — conectores premium (FactSet, S&P Global, LSEG, MSCI, PitchBook, Morningstar, Moody's, Aiera, Daloopa, Chronograph, Egnyte) con fallback abierto (yfinance + Stooq)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+
+dependencies = [
+    "mcp[cli]>=1.2.0",
+    "pydantic>=2.6",
+    "pydantic-settings>=2.2",
+    "httpx>=0.27",
+    "yfinance>=0.2.40",
+    "tenacity>=8.2",
+    "cachetools>=5.3",
+    "numpy>=1.26",
+    "pandas>=2.2",
+    "rich>=13.7",
+    "pyyaml>=6.0",
+    "tzdata; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-mock>=3.14",
+    "respx>=0.21",
+]
+
+[project.scripts]
+mineral-markets-mcp = "mineral_markets_mcp.server:main"
+mineral-markets-monitor = "mineral_markets_mcp.monitor:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mineral_markets_mcp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

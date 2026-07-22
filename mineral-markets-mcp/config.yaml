@@ -1,0 +1,54 @@
+# Configuración del agente de monitoreo (monitor.py).
+# No pongas claves API aquí — esas van en .env (ver .env.example).
+
+polling:
+  interval_minutes: 5
+  market_hours_only: true
+  timezone: "America/New_York"  # ventana 09:30-16:00 ET, lun-vie (sin calendario de feriados en el MVP)
+
+universe:
+  metals:
+    - { symbol: XAU, label: "Oro spot" }
+    - { symbol: XAG, label: "Plata spot" }
+    - { symbol: HG, label: "Cobre futuros" }
+    - { symbol: XPT, label: "Platino futuros" }
+    - { symbol: XPD, label: "Paladio futuros" }
+  equities:
+    - { symbol: NEM, label: "Newmont" }
+    - { symbol: B, label: "Barrick Mining Corp." }  # ex-"Barrick Gold"; ticker NYSE cambió de GOLD a B en may-2025.
+                                                     # "GOLD" quedaría mal resuelto: colisiona con el alias de oro
+                                                     # spot en METAL_TICKER_MAP (connectors/open_data.py).
+    - { symbol: FCX, label: "Freeport-McMoRan" }
+    - { symbol: SCCO, label: "Southern Copper" }
+    - { symbol: WPM, label: "Wheaton Precious Metals" }
+    - { symbol: AEM, label: "Agnico Eagle Mines" }
+    - { symbol: VALE, label: "Vale" }
+    - { symbol: BHP, label: "BHP Group" }
+    - { symbol: RIO, label: "Rio Tinto" }
+  # Tus tickers personalizados — se agregan tal cual, como equities.
+  custom_tickers: []
+  indices:
+    - { symbol: "^GSPC", label: "S&P 500" }
+    - { symbol: XLB, label: "Materials Select Sector SPDR" }
+  # Tickers de Yahoo Finance directos (no pasan por el mapeo de metales del conector "open").
+  macro:
+    - { symbol: "DX-Y.NYB", label: "Dollar Index (DXY)" }
+    - { symbol: "^TNX", label: "US 10Y Treasury Yield" }
+
+signals:
+  rsi:
+    period: 14
+    oversold: 30
+    overbought: 70
+  macd:
+    fast: 12
+    slow: 26
+    signal: 9
+  sma_breakout:
+    period: 50
+  intraday_move_pct: 3.0
+  gsr_shift_pct: 2.0
+
+alerts:
+  log_level_on_signal: WARNING
+  notify_hook: null
